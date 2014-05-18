@@ -45,7 +45,11 @@ public class GUI extends AnchorPane {
 	private int columns;
 	private int rows;
 	private Rectangle[][] rectangles;
+	private File[][] files;
 	boolean hasImage = false;
+	
+	
+	final private ImgProcessor IP;
 	
 	//FXML IDs
 	@FXML Button playButton;
@@ -73,6 +77,8 @@ public class GUI extends AnchorPane {
         		updateSelected();
         	}
         }, 0, 30);
+        
+        IP = ImgProcessor.getProcessor();
 	}
 	
 	@FXML protected void loadImage() {
@@ -94,7 +100,7 @@ public class GUI extends AnchorPane {
 			System.out.println("* Temporary directory successfully created:"
 					+ "\n   " + tempDir.getAbsolutePath());
 		} else {
-			System.out.println("! Error: directory already initialized. Attempting clean...");
+			System.out.println("! Warning: directory already initialized. Attempting clean...");
 			if(clean()){
 				System.out.println("* Clean successful.");
 				if(tempDir.mkdir()) {
@@ -116,13 +122,17 @@ public class GUI extends AnchorPane {
 		rows = (int) pic.getHeight() / SUBIMAGE_LENGTH;
 		
 		rectangles = new Rectangle[columns+1][rows+1];
+		files = new File[columns+1][rows+1];
 		
 		for(int col = 0; col < columns; col++) {
 			for(int row = 0; row < rows; row++) {
 				final int c = col;
 				final int r = row;
 				File newImage = 
-						new File(address+"\\tmpimg\\"+col+","+row+".jpg");
+						new File(address+"\\tmpimg\\"+
+								(col<10?"0" + col : col)+","+
+								(row<10?"0" + row : row)+".jpg");
+				files[c][r] = newImage;
 				try {
 					ImageIO.write(img.getSubimage(col * SUBIMAGE_LENGTH,
 												  row * SUBIMAGE_LENGTH, 
@@ -174,7 +184,6 @@ public class GUI extends AnchorPane {
 	protected void handlePlay() {
 		if(playing) {
 			scan.interrupt();
-			System.out.println("interrupted!");
 			playing = false;
 		} else {
 			playing = true;
@@ -249,9 +258,9 @@ public class GUI extends AnchorPane {
 		
 		@Override
 		public void run() {
-			System.out.println(Thread.currentThread());
 			for(int col = c; col < columns; col++) {
-				for(int row = stitch? r : 0; row < rows; row++) {
+				IP.setMode(files[col]);
+				for(int row = stitch ? r : 0; row < rows; row++) {
 					stitch = false;
 					setSelected(col, row);
 					try {
