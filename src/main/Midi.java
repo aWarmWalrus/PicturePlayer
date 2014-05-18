@@ -1,4 +1,4 @@
-package Midi;
+package main;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -61,8 +61,8 @@ public class Midi {
 		Midi m = new Midi();
 		playStream x = m.playList.get(0);
 		playStream y = m.playList.get(1);
-		x.run();
-		y.run();
+		x.start();
+		y.start();
 
 		//		try {
 		//			Synthesizer x = MidiSystem.getSynthesizer();
@@ -108,6 +108,7 @@ public class Midi {
 		@Override
 		public void run() {
 			System.out.println(Thread.currentThread().getName());
+			int root = 50;
 			try {
 				Synthesizer x = MidiSystem.getSynthesizer();
 				MidiChannel[] o = x.getChannels();
@@ -116,7 +117,8 @@ public class Midi {
 
 				Random rand = new Random();
 				while (playing) {
-					int i = rand.nextInt(50) + 30;
+					int i = rand.nextInt(7);
+					Modes.IONIAN.values()[i];
 					int duration = rand.nextInt(3) + 2;
 					duration *= 200;
 					mc1.noteOn(i, 80);

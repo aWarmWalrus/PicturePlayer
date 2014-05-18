@@ -121,8 +121,8 @@ public class GUI extends AnchorPane {
 		columns = (int) pic.getWidth() / SUBIMAGE_LENGTH;
 		rows = (int) pic.getHeight() / SUBIMAGE_LENGTH;
 		
-		rectangles = new Rectangle[columns+1][rows+1];
-		files = new File[columns+1][rows+1];
+		rectangles = new Rectangle[columns][rows];
+		files = new File[columns][rows];
 		
 		for(int col = 0; col < columns; col++) {
 			for(int row = 0; row < rows; row++) {

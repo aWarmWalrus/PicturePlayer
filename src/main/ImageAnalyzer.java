@@ -1,7 +1,8 @@
+package main;
+
 import java.applet.Applet;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -9,19 +10,19 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Vector;
 
 import javax.imageio.ImageIO;
-import javax.sound.midi.*;
-import javax.vecmath.*;
+import javax.vecmath.Tuple2d;
+import javax.vecmath.Vector3d;
 
-import Midi.*;
-import Midi.Midi.Modes;
-import Midi.Midi.playStream;
-
+import main.Midi.Modes;
 
 public class ImageAnalyzer extends Applet{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	// File representing the folder that you select using a FileChooser
 	static final File dir = new File(System.getProperty("user.dir"));
@@ -82,7 +83,7 @@ public class ImageAnalyzer extends Applet{
 
 			try{
 				System.out.println(dir.getParent());
-				File f = new File(dir.getParent()+"/img/testfour.png");
+				File f = new File(dir.getParent()+"/tmpimg/00,00.jpg");
 				System.out.println(f.getAbsolutePath());
 				// 		dir.listFiles(IMAGE_FILTER)[0];
 				img = ImageIO.read(f);
@@ -112,8 +113,8 @@ public class ImageAnalyzer extends Applet{
 					//	colours.put(new Vector2d(i,j),new Color((float)(pixel.y/255),(float)(pixel.z/255),(float) (pixel.w/255)));
 						float[] hsv = Color.RGBtoHSB((int)(pixel.x), (int)(pixel.y), (int)(pixel.z), new float[3]);
 						HSB.get(HSB.size()-1).add(new Vector3d(hsv[0],hsv[1],hsv[2]));
-						System.out.println(pixel.x + " " + pixel.y + " " + pixel.z);
-						System.out.println(hsv[0] + " " + hsv[1] + " " + hsv[2]);
+//						System.out.println(pixel.x + " " + pixel.y + " " + pixel.z);
+//						System.out.println(hsv[0] + " " + hsv[1] + " " + hsv[2]);
 					//	hsvColors.put(new Vector2d(i,j), Color.getHSBColor(hsv[0],hsv[1],hsv[2]));
 					}
 				}
