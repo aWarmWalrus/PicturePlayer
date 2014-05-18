@@ -45,7 +45,12 @@ public class ImageAnalyzer extends Applet{
 
 	public static BufferedImage img;
 	
-	public static int SAMPLE_SIZE = 1;
+	public static ArrayList<ArrayList<Vector3d>> HSB;
+	
+	public static double maxH = Double.MIN_VALUE, minH = Double.MAX_VALUE;
+	
+	private int currPitch, currVel;
+	private double currDur;
 
 	public void paint(Graphics g) {
 		g.drawImage(img, 0,0, null);
@@ -59,6 +64,8 @@ public class ImageAnalyzer extends Applet{
 	@Override
 	public void init() {//main(String[] args) {
 		// TODO Auto-generated method stub
+		long beforeTime = System.currentTimeMillis();
+//		System.out.println(System.currentTimeMillis());
 		System.out.println("hey ");
 		System.out.println(dir.isDirectory());
 		//    BufferedImage hugeImage = ImageIO.read(PerformanceTest.class.getResource("12000X12000.jpg"));
@@ -95,16 +102,16 @@ public class ImageAnalyzer extends Applet{
 				
 				Vector3d pixel;
 				ArrayList<ArrayList<Color>> RGB = new ArrayList<ArrayList<Color>>();
-				ArrayList<ArrayList<Vector3d>> HSB = new ArrayList<ArrayList<Vector3d>>();
+				HSB = new ArrayList<ArrayList<Vector3d>>();
 				HashMap<Tuple2d, Color> colours = new HashMap<Tuple2d, Color>();
 				HashMap<Tuple2d, Color> hsvColors = new HashMap<Tuple2d, Color>();
 				
 				int[][] pixels = convertTo2DWithoutUsingGetRGB(img);
-				for(int i = 0; i < pixels.length; i++)
+				for(int i = 0; i < pixels.length; i+=10)
 				{
 					RGB.add(new ArrayList<Color>());
 					HSB.add(new ArrayList<Vector3d>());
-					for(int j = 0; j < pixels[i].length; j++)
+					for(int j = 0; j < pixels[i].length; j+=10)
 					{
 						
 						pixel = toRGB(pixels[i][j]);
@@ -125,13 +132,18 @@ public class ImageAnalyzer extends Applet{
 					Modes mode = chooseMode(avg.x);
 					for(int j = 0; j < HSB.get(i).size(); j++)
 					{
+						//STUFF ABOUT SUBIMAGES....
+						Vector3d note = getSubImgAvg(i, j);
+						currDur = Math.abs(note.y - stdDev.y);
+						currVel = (int)(Math.round(Math.abs(note.z - stdDev.z)));
+						currPitch = getPitch(note.x);
 						
 					}
 				}
 				
 				
 				
-				
+				System.out.println("Time elapsed:" + (System.currentTimeMillis()-beforeTime));
 				
 				
 			} catch (final IOException e) {
@@ -169,6 +181,28 @@ public class ImageAnalyzer extends Applet{
 
 	}
 
+	
+	int getPitch(double H) {
+		int p = (int) Math.floor(H / (maxH - minH / 7));
+		return p;
+	}
+	
+	Vector3d getSubImgAvg(int x, int y)
+	{
+		Vector3d mean = new Vector3d();
+		for(int j = x; j < x + GUI.SUBIMAGE_LENGTH; j ++)
+		{
+			for(int k = y; k < y + GUI.SUBIMAGE_LENGTH; k ++)
+			{
+				mean.x += HSB.get(j).get(k).x;
+				mean.y += HSB.get(j).get(k).y;
+				mean.z += HSB.get(j).get(k).z;
+			}
+		}
+		mean.scale(1/(GUI.SUBIMAGE_LENGTH*GUI.SUBIMAGE_LENGTH));
+		return mean;
+	}
+	
 	static Vector3d getAvg(ArrayList<Vector3d> colours)
 	{
 		Vector3d mean = new Vector3d();
@@ -199,6 +233,10 @@ public class ImageAnalyzer extends Applet{
 			stdDev.x += Math.pow((c.x - mean.x),2);
 			stdDev.y += Math.pow((c.y - mean.y),2);
 			stdDev.z += Math.pow((c.z - mean.z),2);
+			if(stdDev.x > maxH)
+				maxH = stdDev.x;
+			if(stdDev.x < minH)
+				minH = stdDev.x;
 		}
 		stdDev.scale(1/colours.size());
 		stdDev.x = Math.sqrt(stdDev.x);

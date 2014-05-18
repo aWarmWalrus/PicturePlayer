@@ -265,11 +265,8 @@ public class GUI extends AnchorPane {
 				for(int row = stitch ? r : 0; row < rows; row++) {
 					stitch = false;
 					setSelected(col, row);
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						return;
-					}
+					IP.playNote(
+							files[col][row]);
 				}
 			}
 			playing = false;

@@ -11,27 +11,39 @@ import javax.sound.midi.Synthesizer;
 
 public class Midi {
 
-	public ArrayList<playStream> playList = new ArrayList<playStream>();
-
+//	public ArrayList<playStream> playList = new ArrayList<playStream>();
+	Synthesizer x;
+	MidiChannel[] o;
+	MidiChannel mc1;
+	
 	public Midi() {
-		playList = new ArrayList<playStream>();
-		playStream x = new playStream();
-		playList.add(x);
-		playList.add(new playStream());
+		Synthesizer x;
+		MidiChannel[] o;
+		try {
+			x = MidiSystem.getSynthesizer();
+			o = x.getChannels();
+			x.open();
+			mc1 = o[5];
+		} catch (MidiUnavailableException e) {
+			e.printStackTrace();
+			return;
+		}	
 	}
 
 	public enum Modes {
-		IONIAN (new int[]{0,2,4,5,7,9,11}),
-		DORIAN (new int[]{0,2,3,5,7,9,10}),
-		PHRYGIAN (new int[]{0,1,3,5,7,8,10}),
-		LYDIAN (new int[]{0,2,4,6,7,9,11}),
-		MIXOLYDIAN (new int[]{0,2,4,5,7,9,10}),
-		AEOLIAN (new int[]{0,2,3,5,7,8,10}),
-		LOCRIAN (new int[]{0,1,3,5,6,8,10});
+		IONIAN (new int[]{0,2,4,5,7,9,11}, new int[][]{{1,3,5},{4,6,1},{5,7,2,4},{2,4,6,1}}),
+		DORIAN (new int[]{0,2,3,5,7,9,10}, new int[][]{{1,3,5,6,7},{6,2,4},{3,5,7},{5,7,2}}),
+		PHRYGIAN (new int[]{0,1,3,5,7,8,10}, new int[][]{{1,3,5,7},{7,2,4,6},{2,4,6}}),
+		LYDIAN (new int[]{0,2,4,6,7,9,11}, new int[][]{{1,3,4,5,7},{2,4,6,1},{5,7,2,4},{4,6,1,3}}),
+		MIXOLYDIAN (new int[]{0,2,4,5,7,9,10}, new int[][]{{1,3,5,7},{5,7,2,4},{4,6,1},{7,2,4,6}}),
+		AEOLIAN (new int[]{0,2,3,5,7,8,10}, new int[][]{{1,3,5,7},{7,2,4},{6,1,3},{5,7,2,4},{4,6,1,3}}),
+		LOCRIAN (new int[]{0,1,3,5,6,8,10}, new int[][]{{1,3,5,7},{1,4,6,2},{5,7,1,4},{3,5,7,1}});
 
 		int[] scale;
+		int[][] chords;
 		
-		Modes(int[] mode) {scale = mode;}
+		Modes(int[] mode, int[][] thoseChords) {scale = mode; chords = thoseChords;}
+		
 
 		public static Modes modes(int mode) {
 			switch (mode) {
@@ -52,58 +64,68 @@ public class Midi {
 			default:
 				return Modes.IONIAN;
 			}
-
 		}
 	}
 
-	/**
-	 * @param args
-	 * @throws MidiUnavailableException 
-	 */
-	public static void main(String[] args) throws MidiUnavailableException {
-		Midi m = new Midi();
-		playStream x = m.playList.get(0);
-		playStream y = m.playList.get(1);
-		System.out.println(Arrays.toString(Modes.IONIAN.scale));
-		x.start();
-		y.start();
-
-		//		try {
-		//			Synthesizer x = MidiSystem.getSynthesizer();
-		//			Soundbank s = x.getDefaultSoundbank();
-		//			MidiChannel[] o = x.getChannels();
-		//
-		//			Instrument[] l = new Instrument[s.getInstruments().length];
-		//			for (int i = 0; i < s.getInstruments().length; i++) {
-		//				l[i] = s.getInstruments()[i];
-		//				System.out.println(i + ": " + l[i].getName() );
-		//			}
-		//			x.open();
-		//			final MidiChannel mc1 = o[0];
-		//			
-		//			Random rand = new Random();
-		//			while (true) {
-		//				int i = rand.nextInt(50) + 30;
-		//				int duration = rand.nextInt(3) + 2;
-		//				duration *= 200;
-		//				mc1.noteOn(i, 80);
-		//				Thread.sleep(duration);
-		//				if(i == 50) break;
-		//			}
-		//		} catch (Exception e) {
-		//			// TODO Auto-generated catch block
-		//			e.printStackTrace();
-		//		}
-		//		Timer t = new Timer();
-		//		t.schedule(new TimerTask(){
-		//			@Override
-		//			public void run() {
-		//				mc1.noteOn(60, 50);
-		//				System.out.println("playing");
-		//			}
-		//			
-		//		}, 33);
+	synchronized public void run(int frequency, int duration, int volume) {
+		try {
+			mc1.noteOn(frequency, volume);
+			Thread.sleep(duration * 2);
+			System.out.println("    duration: " + duration);
+			mc1.noteOff(frequency);
+		} catch (InterruptedException e) {
+			return;
+		}
 	}
+	
+//	/**
+//	 * @param args
+//	 * @throws MidiUnavailableException 
+//	 */
+//	public static void main(String[] args) throws MidiUnavailableException {
+//		Midi m = new Midi();
+//		playStream x = m.playList.get(0);
+//		playStream y = m.playList.get(1);
+//		System.out.println(Arrays.toString(Modes.IONIAN.scale));
+//		x.start();
+//		y.start();
+//
+//		//		try {
+//		//			Synthesizer x = MidiSystem.getSynthesizer();
+//		//			Soundbank s = x.getDefaultSoundbank();
+//		//			MidiChannel[] o = x.getChannels();
+//		//
+//		//			Instrument[] l = new Instrument[s.getInstruments().length];
+//		//			for (int i = 0; i < s.getInstruments().length; i++) {
+//		//				l[i] = s.getInstruments()[i];
+//		//				System.out.println(i + ": " + l[i].getName() );
+//		//			}
+//		//			x.open();
+//		//			final MidiChannel mc1 = o[0];
+//		//			
+//		//			Random rand = new Random();
+//		//			while (true) {
+//		//				int i = rand.nextInt(50) + 30;
+//		//				int duration = rand.nextInt(3) + 2;
+//		//				duration *= 200;
+//		//				mc1.noteOn(i, 80);
+//		//				Thread.sleep(duration);
+//		//				if(i == 50) break;
+//		//			}
+//		//		} catch (Exception e) {
+//		//			// TODO Auto-generated catch block
+//		//			e.printStackTrace();
+//		//		}
+//		//		Timer t = new Timer();
+//		//		t.schedule(new TimerTask(){
+//		//			@Override
+//		//			public void run() {
+//		//				mc1.noteOn(60, 50);
+//		//				System.out.println("playing");
+//		//			}
+//		//			
+//		//		}, 33);
+//	}
 
 	public class playStream extends Thread {
 
