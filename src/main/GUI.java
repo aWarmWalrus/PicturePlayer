@@ -31,7 +31,7 @@ public class GUI extends AnchorPane {
 	final Stage main;
 	final Group root;
 	final String address;
-	static int SUBIMAGE_LENGTH = 64;
+	static int SUBIMAGE_LENGTH = 32;
 	static int BORDER_OFFSET = SUBIMAGE_LENGTH / 2;
 	public File tempDir;
 	BufferedImage img;
