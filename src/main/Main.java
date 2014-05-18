@@ -15,7 +15,7 @@ public class Main extends Application {
 	@Override
 	public void start(Stage s) throws Exception {
 		stage = s;
-		s.setTitle("A Space Odyssey jk help me think of a good title");
+		s.setTitle("WHAT IS THE MEANING OF THIS");
 		Group root = new Group();
 		stage.setScene(new Scene(root));
 		GUI g = new GUI(s);

@@ -1,6 +1,7 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import javax.sound.midi.MidiChannel;
@@ -28,7 +29,9 @@ public class Midi {
 		AEOLIAN (new int[]{0,2,3,5,7,8,10}),
 		LOCRIAN (new int[]{0,1,3,5,6,8,10});
 
-		Modes(int[] mode) {}
+		int[] scale;
+		
+		Modes(int[] mode) {scale = mode;}
 
 		public static Modes modes(int mode) {
 			switch (mode) {
@@ -61,6 +64,7 @@ public class Midi {
 		Midi m = new Midi();
 		playStream x = m.playList.get(0);
 		playStream y = m.playList.get(1);
+		System.out.println(Arrays.toString(Modes.IONIAN.scale));
 		x.start();
 		y.start();
 
@@ -107,8 +111,8 @@ public class Midi {
 
 		@Override
 		public void run() {
-			System.out.println(Thread.currentThread().getName());
-			int root = 50;
+//			System.out.println(Thread.currentThread().getName());
+			
 			try {
 				Synthesizer x = MidiSystem.getSynthesizer();
 				MidiChannel[] o = x.getChannels();
@@ -117,8 +121,7 @@ public class Midi {
 
 				Random rand = new Random();
 				while (playing) {
-					int i = rand.nextInt(7);
-					Modes.IONIAN.values()[i];
+					int i = rand.nextInt(50) + 30;
 					int duration = rand.nextInt(3) + 2;
 					duration *= 200;
 					mc1.noteOn(i, 80);

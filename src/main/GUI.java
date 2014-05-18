@@ -31,7 +31,7 @@ public class GUI extends AnchorPane {
 	final Stage main;
 	final Group root;
 	final String address;
-	static int SUBIMAGE_LENGTH = 50;
+	static int SUBIMAGE_LENGTH = 64;
 	static int BORDER_OFFSET = SUBIMAGE_LENGTH / 2;
 	public File tempDir;
 	BufferedImage img;
@@ -85,7 +85,9 @@ public class GUI extends AnchorPane {
 		cleanRoot();
 		//Get the image file from the user.
 		FileChooser fc = new FileChooser();
+		fc.setInitialDirectory(new File(System.getProperty("user.dir")));
 		File imageFile = fc.showOpenDialog(main);
+		if(imageFile == null) return;
 		String filePath = imageFile.getAbsolutePath();
 		Image pic = new Image("file:///" + filePath);
 		try {
@@ -145,8 +147,8 @@ public class GUI extends AnchorPane {
 					return;
 				}
 				final Image sub = new Image("file:///" + newImage.getAbsolutePath());
-				final Rectangle subIV = new Rectangle(col*50 + BORDER_OFFSET, 
-						row*50 + BORDER_OFFSET, 
+				final Rectangle subIV = new Rectangle(col*SUBIMAGE_LENGTH + BORDER_OFFSET, 
+						row*SUBIMAGE_LENGTH + BORDER_OFFSET, 
 						SUBIMAGE_LENGTH,
 						SUBIMAGE_LENGTH);
 				rectangles[col][row] = subIV;
@@ -264,7 +266,7 @@ public class GUI extends AnchorPane {
 					stitch = false;
 					setSelected(col, row);
 					try {
-						Thread.sleep(500);
+						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 						return;
 					}
